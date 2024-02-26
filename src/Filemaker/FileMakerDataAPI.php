@@ -49,10 +49,26 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 
 	public function getToken()
 	{
+		if (!$this->ci->session->userdata('fmtoken')) {
+			$loginSession = $this->logInDatabase();
+			$loginSession = json_decode($loginSession, true);
+			$userSessionData = array(
+				'fmtoken' => $loginSession['response']['token'],
+				'loggedIn' => true,
+			);
+			$this->ci->session->set_userdata($userSessionData);
+		}
+		$this->token = $this->ci->session->userdata('fmtoken');
+		return $this->token;
 	}
 
 	public function removeToken()
 	{
+		$userSessionData = array(
+			'fmtoken' => '',
+			'loggedIn' => false,
+		);
+		$this->ci->session->set_userdata($userSessionData);
 	}
 
 	/**
@@ -125,6 +141,22 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 
 	public function create()
 	{
+		$data = array('fieldData' => $this->fieldData);
+		$data = json_encode($data);
+		// dd($data);
+		$layout = $this->layout;
+		$endpoint = 'layouts/' . $layout . '/records';
+		$token = $this->getToken();
+		$getResponse = $this->ci->filemakerdataapiconnect->postRequest($endpoint, $token, $data);
+		$getResponse = json_decode($getResponse, true);
+		$messageCode = $getResponse['messages'][0]['code'];
+		if ($messageCode === '952') {
+			$this->removeToken();
+			$token = $this->getToken();
+			$getResponse = $this->ci->filemakerdataapiconnect->postRequest($endpoint, $token, $data);
+			$getResponse = json_decode($getResponse, true);
+		}
+		return $getResponse;
 	}
 
 	/**
@@ -135,14 +167,70 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 	 */
 	public function get()
 	{
+		$data = array(
+			'query' => $this->andWheres,
+			'limit' => $this->limit,
+			'offset' => $this->offset,
+			'sort' => array($this->sort)
+		);
+		$data = json_encode($data);
+		$layout = $this->layout;
+
+
+		// print_r($data);
+		// die;
+		
+		$endpoint = 'layouts/' . $layout . '/_find';
+		$token = $this->getToken();
+
+		$getResponse = $this->ci->filemakerdataapiconnect->postRequest($endpoint, $token, $data);
+		$getResponse = json_decode($getResponse, true);
+		$messageCode = $getResponse['messages'][0]['code'];
+		if ($messageCode === '952') {
+			$this->removeToken();
+			$token = $this->getToken();
+			$getResponse = $this->ci->filemakerdataapiconnect->postRequest($endpoint, $token, $data);
+			$getResponse = json_decode($getResponse, true);
+		}
+		return $getResponse;
 	}
 
 	public function update()
 	{
+		$recordId = $this->recordId;
+		$data = array('fieldData' => $this->fieldData);
+		$data = json_encode($data);
+		$layout = $this->layout;
+		$endpoint = 'layouts/' . $layout . '/records'.'/'.$recordId;
+		$token = $this->getToken();
+		$patchResponse = $this->ci->filemakerdataapiconnect->patchRequest($endpoint, $token, $data);
+		$patchResponse = json_decode($patchResponse, true);
+		$messageCode = $patchResponse['messages'][0]['code'];
+		if ($messageCode === '952') {
+			$this->removeToken();
+			$token = $this->getToken();
+			$patchResponse = $this->ci->filemakerdataapiconnect->patchRequest($endpoint, $token, $data);
+			$patchResponse = json_decode($patchResponse, true);
+		}
+		return $patchResponse;
 	}
 
 	public function getRecord()
 	{
+		$recordId = $this->recordId;
+		$layout = $this->layout;
+		$endpoint = 'layouts/' . $layout . '/records'.'/'.$recordId;
+		$token = $this->getToken();
+		$getResponse = $this->ci->filemakerdataapiconnect->getRequest($endpoint, $token);
+		$getResponse = json_decode($getResponse, true);
+		$messageCode = $getResponse['messages'][0]['code'];
+		if ($messageCode === '952') {
+			$this->removeToken();
+			$token = $this->getToken();
+			$getResponse = $this->ci->filemakerdataapiconnect->getRequest($endpoint, $token);
+			$getResponse = json_decode($getResponse, true);
+		}
+		return $getResponse;
 	}
 
 	/**
@@ -153,6 +241,20 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 	 */
 	public function delete()
 	{
+		$layout = $this->layout;
+		$recordId = $this->recordId;
+		$endpoint = 'layouts/' . $layout . '/records'.'/' . $recordId;
+		$token = $this->getToken();
+		$getResponse = $this->ci->filemakerdataapiconnect->delete($endpoint, $token);
+		$getResponse = json_decode($getResponse, true);
+		$messageCode = $getResponse['messages'][0]['code'];
+		if ($messageCode === '952') {
+			$this->removeToken();
+			$token = $this->getToken();
+			$getResponse = $this->ci->filemakerdataapiconnect->delete($endpoint, $token);
+			$getResponse = json_decode($getResponse, true);
+		}
+		return $getResponse;
 	}
 
 	/**
@@ -163,9 +265,46 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 	 */
 	public function performScript()
 	{
+		$layout = $this->layout;
+		$script = $this->script;
+		
+		$offset =  isset($this->offset)? $this->offset : 1;
+		$limit = isset($this->limit)? $this->limit: 5;
+
+		$scriptParameter = $this->scriptParameter;
+		$endpoint = 'layouts/' . $layout . '/records'. '?script=' . $script . '&script.param=' . $scriptParameter . '&_offset=' . $offset . '&_limit=' . $limit;
+		$endpoint = rawurlencode($endpoint);
+
+		$token = $this->getToken();
+		$getResponse = $this->ci->filemakerdataapiconnect->performScript($endpoint, $token);
+		$getResponse = json_decode($getResponse, true);
+		$messageCode = $getResponse['messages'][0]['code'];
+		if ($messageCode === '952') {
+			$this->removeToken();
+			$token = $this->getToken();
+			$getResponse = $this->ci->filemakerdataapiconnect->performScript($endpoint, $token);
+			$getResponse = json_decode($getResponse, true);
+		}
+		return $getResponse;
 	}
 
 	public function upload($file = '')
 	{
+		$recordId = $this->recordId;
+
+		$layout = $this->layout;
+		$endpoint = 'layouts/' . $layout . '/records'.'/'. $recordId . '/containers/Document';
+		$token = $this->getToken();
+		$getResponse = $this->ci->filemakerdataapiconnect->upload($endpoint, $token, $file);
+		$getResponse = json_decode($getResponse, true);
+		$messageCode = $getResponse['messages'][0]['code'];
+		if ($messageCode === '952') {
+			$this->removeToken();
+			$token = $this->getToken();
+			$getResponse = $this->ci->filemakerdataapiconnect->upload($endpoint, $token, $file);
+			$getResponse = json_decode($getResponse, true);
+		}
+		return $getResponse;
+	}
 	}
 }

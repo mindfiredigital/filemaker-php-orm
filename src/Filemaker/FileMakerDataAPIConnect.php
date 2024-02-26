@@ -118,6 +118,7 @@ class FileMakerDataAPIConnect
             CURLOPT_POSTFIELDS => json_encode($data), // Ensure $data is JSON encoded
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => 0,
+            CURLINFO_HEADER_OUT => true
         ];
 
         curl_setopt_array($ch, $curlOptions);

@@ -50,6 +50,7 @@ class FileMakerDataAPIConnect
 
     public function loginFMDatabase()
     {
+        die("testing");
         $databases = array(
             "fmDataSource" => array(
                 array(

@@ -11,5 +11,5 @@ use FilemakerPhpOrm\Filemaker\FileMakerDataAPI;
 $class = new \FilemakerPhpOrm\Filemaker\FileMakerDataAPIConnect();
 echo 'here';
 $test = new FileMakerDataAPI();
-echo $test->logInDatabase();
+echo $test->getToken();
 echo $_ENV['FM_HOST'];

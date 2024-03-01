@@ -38,11 +38,11 @@ class FileMakerDataAPIConnect
         $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
         $dotenv->load();
 
-        $this->hostname = getenv('FM_HOST');
-        $this->database = getenv('FM_DATABASE');
-        $this->version = getenv('FM_VERSION');
-        $this->username = getenv('FM_USERNAME');
-        $this->password = getenv('FM_PASSWORD');
+        $this->hostname = $_ENV['FM_HOST'];
+        $this->database = $_ENV['FM_DATABASE'];
+        $this->version = $_ENV['FM_VERSION'];
+        $this->username = $_ENV['FM_USERNAME'];
+        $this->password = $_ENV['FM_PASSWORD'];
 
         $this->baseURL = "https://$this->hostname/fmi/data/$this->version/databases/$this->database";
         // $this->token = $this->loginFMDatabase($databases);
@@ -50,27 +50,26 @@ class FileMakerDataAPIConnect
 
     public function loginFMDatabase()
     {
-        die("testing");
-        $databases = array(
-            "fmDataSource" => array(
-                array(
-                    "database" => "DATA_ContactMgt",
-                    "username" => "Developer",
-                    "password" => "adminbiz"
-                ),
-                array(
-                    "database" => "DATA_LineItem",
-                    "username" => "Developer",
-                    "password" => "adminbiz"
-                )
-            )
-        );
+        // $databases = array(
+        //     "fmDataSource" => array(
+        //         array(
+        //             "database" => "DATA_ContactMgt",
+        //             "username" => "Developer",
+        //             "password" => "adminbiz"
+        //         ),
+        //         array(
+        //             "database" => "DATA_LineItem",
+        //             "username" => "Developer",
+        //             "password" => "adminbiz"
+        //         )
+        //     )
+        // );
         
         $endpoint = "sessions";
         $uri = $this->baseURL . '/' . $endpoint;
 
-        $fmDataSource = ['fmDataSource' => $databases];
-        $bodyJSON = json_encode($fmDataSource);
+        // $fmDataSource = ['fmDataSource' => $databases];
+        // $bodyJSON = json_encode($fmDataSource);
 
         $authentication = $this->username . ':' . $this->password;
 
@@ -87,7 +86,7 @@ class FileMakerDataAPIConnect
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 180,
             CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_POSTFIELDS => $bodyJSON,
+            // CURLOPT_POSTFIELDS => $bodyJSON,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => 0,
             CURLINFO_HEADER_OUT => true,
@@ -97,8 +96,15 @@ class FileMakerDataAPIConnect
 
         $responseCurl = curl_exec($ch);
         curl_close($ch);
+        
+        $response_data = json_decode($responseCurl, true);
+        $fmtoken = $response_data['response']['token'];
+        
+        session_start();
+        $_SESSION['fmtoken'] = $fmtoken;
 
         return $responseCurl;
+
     }
     public function postRequest($endpoint, $token, $data)
     {

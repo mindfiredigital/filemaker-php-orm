@@ -46,20 +46,45 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 		return $this->filemakerdataapiconnect->loginFMDatabase();
 	}
 
+	// public function getToken()
+	// {
+	// 	if (!$this->ci->session->userdata('fmtoken')) {
+	// 		$loginSession = $this->logInDatabase();
+	// 		$loginSession = json_decode($loginSession, true);
+	// 		$userSessionData = array(
+	// 			'fmtoken' => $loginSession['response']['token'],
+	// 			'loggedIn' => true,
+	// 		);
+	// 		$this->ci->session->set_userdata($userSessionData);
+	// 	}
+	// 	$this->token = $this->ci->session->userdata('fmtoken');
+	// 	return $this->token;
+	// }
+
+
+
+
 	public function getToken()
 	{
-		if (!$this->ci->session->userdata('fmtoken')) {
-			$loginSession = $this->logInDatabase();
+		// session_start();
+
+		if (!isset($_SESSION['fmtoken'])) {
+			$loginSession = $this->logInDatabase(); // Assuming $this->logInDatabase() is defined elsewhere
 			$loginSession = json_decode($loginSession, true);
 			$userSessionData = array(
 				'fmtoken' => $loginSession['response']['token'],
 				'loggedIn' => true,
 			);
-			$this->ci->session->set_userdata($userSessionData);
+			foreach ($userSessionData as $key => $value) {
+				$_SESSION[$key] = $value;
+			}
 		}
-		$this->token = $this->ci->session->userdata('fmtoken');
+
+		$this->token = $_SESSION['fmtoken'] ?? null;
+
 		return $this->token;
 	}
+
 
 	public function removeToken()
 	{
@@ -67,7 +92,11 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 			'fmtoken' => '',
 			'loggedIn' => false,
 		);
-		$this->ci->session->set_userdata($userSessionData);
+		// $this->ci->session->set_userdata($userSessionData);
+		foreach ($userSessionData as $key => $value) {
+			$_SESSION[$key] = $value;
+		}
+
 	}
 
 	/**
@@ -76,6 +105,8 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 	 * @param String  $layout - Name of layout
 	 * @return Object - FM wrapper Object.
 	 */
+
+	 
 	public function setLayout($layout = '')
 	{
 		$this->layout = $layout;
@@ -112,6 +143,8 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 	 * @param Array $andWheres - Fields for AND  conditionals.
 	 * @return Object - Current FM wrapper Object.
 	 */
+
+
 	public function andWheres($andWheres = array(), $search = false)
 	{
 		if (!empty($andWheres) && $search == false) {

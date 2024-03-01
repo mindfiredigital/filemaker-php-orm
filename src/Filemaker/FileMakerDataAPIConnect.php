@@ -50,6 +50,10 @@ class FileMakerDataAPIConnect
 
     public function loginFMDatabase()
     {
+
+        //We don't need the array of databases as of now.
+
+        
         // $databases = array(
         //     "fmDataSource" => array(
         //         array(
@@ -108,21 +112,22 @@ class FileMakerDataAPIConnect
     }
     public function postRequest($endpoint, $token, $data)
     {
+        
         $uri = $this->baseURL . '/' . $endpoint;
-
+          
         $ch = curl_init();
         $headers = [
             'Authorization: Bearer ' . $token,
             'Content-Type: application/json',
         ];
-
+        
         $curlOptions = [
             CURLOPT_URL => $uri,
             CURLOPT_POST => 1,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 180,
             CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_POSTFIELDS => json_encode($data), // Ensure $data is JSON encoded
+            CURLOPT_POSTFIELDS => $data, // Ensure $data is JSON encoded
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => 0,
             CURLINFO_HEADER_OUT => true

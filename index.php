@@ -9,7 +9,18 @@ require 'vendor/autoload.php';
 use FilemakerPhpOrm\Filemaker\FileMakerDataAPI;
 
 $class = new \FilemakerPhpOrm\Filemaker\FileMakerDataAPIConnect();
-echo 'here';
-$test = new FileMakerDataAPI();
-echo $test->getToken();
-echo $_ENV['FM_HOST'];
+$filemakerdataapi = new FileMakerDataAPI();
+
+
+//Testing code for find.
+
+$neededDocData = array(
+    'nameLast' => 'Aten'
+);
+$resultObj = $filemakerdataapi
+            ->setLayout('ens_MUS__Musicians_mbr')
+            ->andWheres($neededDocData)
+            ->limit(1, 20)
+            ->orderBy('nameLast', 'Aten')
+            ->get();
+print_r($resultObj);

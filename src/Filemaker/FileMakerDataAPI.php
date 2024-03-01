@@ -45,25 +45,6 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 	{
 		return $this->filemakerdataapiconnect->loginFMDatabase();
 	}
-
-	// public function getToken()
-	// {
-	// 	if (!$this->ci->session->userdata('fmtoken')) {
-	// 		$loginSession = $this->logInDatabase();
-	// 		$loginSession = json_decode($loginSession, true);
-	// 		$userSessionData = array(
-	// 			'fmtoken' => $loginSession['response']['token'],
-	// 			'loggedIn' => true,
-	// 		);
-	// 		$this->ci->session->set_userdata($userSessionData);
-	// 	}
-	// 	$this->token = $this->ci->session->userdata('fmtoken');
-	// 	return $this->token;
-	// }
-
-
-
-
 	public function getToken()
 	{
 		// session_start();
@@ -81,6 +62,7 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 		}
 
 		$this->token = $_SESSION['fmtoken'] ?? null;
+		
 
 		return $this->token;
 	}
@@ -92,7 +74,6 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 			'fmtoken' => '',
 			'loggedIn' => false,
 		);
-		// $this->ci->session->set_userdata($userSessionData);
 		foreach ($userSessionData as $key => $value) {
 			$_SESSION[$key] = $value;
 		}
@@ -175,7 +156,6 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 	{
 		$data = array('fieldData' => $this->fieldData);
 		$data = json_encode($data);
-		// dd($data);
 		$layout = $this->layout;
 		$endpoint = 'layouts/' . $layout . '/records';
 		$token = $this->getToken();
@@ -207,21 +187,19 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 		);
 		$data = json_encode($data);
 		$layout = $this->layout;
-
-
-		// print_r($data);
-		// die;
 		
 		$endpoint = 'layouts/' . $layout . '/_find';
 		$token = $this->getToken();
 
-		$getResponse = $this->ci->filemakerdataapiconnect->postRequest($endpoint, $token, $data);
+
+		$getResponse = $this->filemakerdataapiconnect->postRequest($endpoint, $token, $data);
 		$getResponse = json_decode($getResponse, true);
+
 		$messageCode = $getResponse['messages'][0]['code'];
 		if ($messageCode === '952') {
 			$this->removeToken();
 			$token = $this->getToken();
-			$getResponse = $this->ci->filemakerdataapiconnect->postRequest($endpoint, $token, $data);
+			$getResponse = $this->filemakerdataapiconnect->postRequest($endpoint, $token, $data);
 			$getResponse = json_decode($getResponse, true);
 		}
 		return $getResponse;

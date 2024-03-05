@@ -162,7 +162,9 @@ class FileMakerDataAPIConnect
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'PATCH',
-            CURLOPT_POSTFIELDS => json_encode($data), // Ensure $data is JSON encoded
+            CURLOPT_POSTFIELDS => $data, // Ensure $data is JSON encoded
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => 0,
             CURLOPT_HTTPHEADER => $headers,
         ];
 
@@ -179,21 +181,24 @@ class FileMakerDataAPIConnect
     public function getRequest($endpoint, $token)
     {
         $uri = $this->baseURL . '/' . $endpoint;
-
+        
         $ch = curl_init();
         $headers = [
             'Authorization: Bearer ' . $token,
             'Content-Type: application/json',
         ];
 
+
         $curlOptions = [
             CURLOPT_URL => $uri,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
+            CURLOPT_TIMEOUT => 180,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => 0,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => $headers,
         ];
@@ -202,7 +207,9 @@ class FileMakerDataAPIConnect
 
         $responseCurl = curl_exec($ch);
 
+
         curl_close($ch);
+
 
         return $responseCurl;
     }

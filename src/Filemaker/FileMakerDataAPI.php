@@ -156,16 +156,17 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 	{
 		$data = array('fieldData' => $this->fieldData);
 		$data = json_encode($data);
+
 		$layout = $this->layout;
 		$endpoint = 'layouts/' . $layout . '/records';
 		$token = $this->getToken();
-		$getResponse = $this->ci->filemakerdataapiconnect->postRequest($endpoint, $token, $data);
+		$getResponse = $this->filemakerdataapiconnect->postRequest($endpoint, $token, $data);
 		$getResponse = json_decode($getResponse, true);
 		$messageCode = $getResponse['messages'][0]['code'];
 		if ($messageCode === '952') {
 			$this->removeToken();
 			$token = $this->getToken();
-			$getResponse = $this->ci->filemakerdataapiconnect->postRequest($endpoint, $token, $data);
+			$getResponse = $this->filemakerdataapiconnect->postRequest($endpoint, $token, $data);
 			$getResponse = json_decode($getResponse, true);
 		}
 		return $getResponse;
@@ -213,13 +214,13 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 		$layout = $this->layout;
 		$endpoint = 'layouts/' . $layout . '/records'.'/'.$recordId;
 		$token = $this->getToken();
-		$patchResponse = $this->ci->filemakerdataapiconnect->patchRequest($endpoint, $token, $data);
+		$patchResponse = $this->filemakerdataapiconnect->patchRequest($endpoint, $token, $data);
 		$patchResponse = json_decode($patchResponse, true);
 		$messageCode = $patchResponse['messages'][0]['code'];
 		if ($messageCode === '952') {
 			$this->removeToken();
 			$token = $this->getToken();
-			$patchResponse = $this->ci->filemakerdataapiconnect->patchRequest($endpoint, $token, $data);
+			$patchResponse = $this->filemakerdataapiconnect->patchRequest($endpoint, $token, $data);
 			$patchResponse = json_decode($patchResponse, true);
 		}
 		return $patchResponse;
@@ -231,13 +232,18 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 		$layout = $this->layout;
 		$endpoint = 'layouts/' . $layout . '/records'.'/'.$recordId;
 		$token = $this->getToken();
-		$getResponse = $this->ci->filemakerdataapiconnect->getRequest($endpoint, $token);
+
+		$getResponse = $this->filemakerdataapiconnect->getRequest($endpoint, $token);
+		var_dump($getResponse);
 		$getResponse = json_decode($getResponse, true);
+		// echo $getResponse;
+		// die();
+
 		$messageCode = $getResponse['messages'][0]['code'];
 		if ($messageCode === '952') {
 			$this->removeToken();
 			$token = $this->getToken();
-			$getResponse = $this->ci->filemakerdataapiconnect->getRequest($endpoint, $token);
+			$getResponse = $this->filemakerdataapiconnect->getRequest($endpoint, $token);
 			$getResponse = json_decode($getResponse, true);
 		}
 		return $getResponse;
@@ -255,13 +261,13 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 		$recordId = $this->recordId;
 		$endpoint = 'layouts/' . $layout . '/records'.'/' . $recordId;
 		$token = $this->getToken();
-		$getResponse = $this->ci->filemakerdataapiconnect->delete($endpoint, $token);
+		$getResponse = $this->filemakerdataapiconnect->deleteRequest($endpoint, $token);
 		$getResponse = json_decode($getResponse, true);
 		$messageCode = $getResponse['messages'][0]['code'];
 		if ($messageCode === '952') {
 			$this->removeToken();
 			$token = $this->getToken();
-			$getResponse = $this->ci->filemakerdataapiconnect->delete($endpoint, $token);
+			$getResponse = $this->filemakerdataapiconnect->deleteRequest($endpoint, $token);
 			$getResponse = json_decode($getResponse, true);
 		}
 		return $getResponse;

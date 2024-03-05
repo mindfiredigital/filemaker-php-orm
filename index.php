@@ -12,15 +12,18 @@ $class = new \FilemakerPhpOrm\Filemaker\FileMakerDataAPIConnect();
 $filemakerdataapi = new FileMakerDataAPI();
 
 
-//Testing code for find.
+//Testing code for update.
 
 $neededDocData = array(
-    'nameLast' => 'Aten'
+    'nameLast' => 'mindfire',
+    'nameFirst' => 'testing'
 );
+
+$recordID = 516 ; 
+
 $resultObj = $filemakerdataapi
             ->setLayout('ens_MUS__Musicians_mbr')
-            ->andWheres($neededDocData)
-            ->limit(1, 20)
-            ->orderBy('nameLast', 'Aten')
-            ->get();
+            ->setRecordId($recordID)
+            ->setFieldData($neededDocData)
+            ->update();
 print_r($resultObj);

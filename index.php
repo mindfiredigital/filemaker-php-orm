@@ -12,18 +12,19 @@ $class = new \FilemakerPhpOrm\Filemaker\FileMakerDataAPIConnect();
 $filemakerdataapi = new FileMakerDataAPI();
 
 
-//Testing code for update.
+//Testing code for Upload Container Field Data.
 
-$neededDocData = array(
-    'nameLast' => 'mindfire',
-    'nameFirst' => 'testing'
-);
+// $neededDocData = array(
+//     'nameLast' => 'mindfire',
+//     'nameFirst' => 'testing'
+// );
 
-$recordID = 516 ; 
+$neededDocData = 'Picture';
+$recordID = 746 ; 
 
 $resultObj = $filemakerdataapi
             ->setLayout('ens_MUS__Musicians_mbr')
             ->setRecordId($recordID)
-            ->setFieldData($neededDocData)
-            ->update();
+            ->setFieldName($neededDocData)
+            ->upload('C:\xampp\htdocs\Internal Project\filemaker-php-orm\Capture.PNG');
 print_r($resultObj);

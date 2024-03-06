@@ -299,6 +299,8 @@ class FileMakerDataAPIConnect
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => $postFields,
             CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => 0
         ];
 
         curl_setopt_array($ch, $curlOptions);

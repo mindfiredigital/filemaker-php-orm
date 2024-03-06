@@ -94,6 +94,12 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 		return $this;
 	}
 
+	public function setFieldName($FieldName = '')
+	{
+		$this->FieldName = $FieldName;
+		return $this;
+	}
+
 	public function setRecordId($recordId = '')
 	{
 		$this->recordId = $recordId;
@@ -292,13 +298,13 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 		$endpoint = rawurlencode($endpoint);
 
 		$token = $this->getToken();
-		$getResponse = $this->ci->filemakerdataapiconnect->performScript($endpoint, $token);
+		$getResponse = $this->filemakerdataapiconnect->performScript($endpoint, $token);
 		$getResponse = json_decode($getResponse, true);
 		$messageCode = $getResponse['messages'][0]['code'];
 		if ($messageCode === '952') {
 			$this->removeToken();
 			$token = $this->getToken();
-			$getResponse = $this->ci->filemakerdataapiconnect->performScript($endpoint, $token);
+			$getResponse = $this->filemakerdataapiconnect->performScript($endpoint, $token);
 			$getResponse = json_decode($getResponse, true);
 		}
 		return $getResponse;
@@ -307,17 +313,18 @@ class FileMakerDataAPI extends FileMakerDataAPIConnect
 	public function upload($file = '')
 	{
 		$recordId = $this->recordId;
-
 		$layout = $this->layout;
-		$endpoint = 'layouts/' . $layout . '/records'.'/'. $recordId . '/containers/Document';
+		$FieldName = $this->FieldName;
+
+		$endpoint = 'layouts/' . $layout . '/records'.'/'. $recordId . '/containers'.'/'.$FieldName;
 		$token = $this->getToken();
-		$getResponse = $this->ci->filemakerdataapiconnect->upload($endpoint, $token, $file);
+		$getResponse = $this->filemakerdataapiconnect->uploadRequest($endpoint, $token, $file);
 		$getResponse = json_decode($getResponse, true);
 		$messageCode = $getResponse['messages'][0]['code'];
 		if ($messageCode === '952') {
 			$this->removeToken();
 			$token = $this->getToken();
-			$getResponse = $this->ci->filemakerdataapiconnect->upload($endpoint, $token, $file);
+			$getResponse = $this->filemakerdataapiconnect->uploadRequest($endpoint, $token, $file);
 			$getResponse = json_decode($getResponse, true);
 		}
 		return $getResponse;

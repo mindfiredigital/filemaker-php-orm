@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+        web:
+          build: .
+          volumes: 
+              - ./FileMakerORM:/var/www/html
+              - ./custom-configs/php.ini:/usr/local/etc/php/php.ini
+              - ./custom-configs/custom-apache.conf:/etc/apache2/sites-available/custom-apache.conf
+          ports:
+              - 85:80 
